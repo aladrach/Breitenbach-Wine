@@ -1,0 +1,49 @@
+{#
+ # Blog index template
+ # -------------------
+ #
+ # This template is loaded whenever http://example.com/news is
+ # requested, because it is located at news/index.html in your
+ # craft/templates/ folder.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+
+{% extends "_layouts/default" %}
+{% set title = "Blog" %}
+
+{% block content %}
+	<section class="blog-list">
+		<div class="row">
+			<div class="medium-12 columns">
+				{% for entry in craft.entries.section('blog').find() %}
+					<article>
+						{% if entry.blogImage.first %}
+							{% set blogImage =  entry.blogImage.first.url('blogListView') %}
+							{% if blogImage %}
+							<div class="blog-image">
+								<img src="{{blogImage}}" alt="{{entry.title}}" class="featured-image">
+							</div>
+							{% endif %}
+						{% endif %}
+						<div class="blog-body">
+							<h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+							<p class="blog-info">Posted on {{ entry.postDate.format('F d, Y') }}</p>
+								{% if entry.postExcerpt | length %}
+					                {# Custom Excerpt #}
+					                <p>{{ entry.postExcerpt }}</p>
+					            {% else %}
+					                {% set paragraphs = entry.body|split('</p>') %}
+					                {% set first_paragraph = paragraphs|first ~ '</p>' %}
+					                {{ first_paragraph | raw }}
+					            {% endif %}
+							<a class="button more-info" href="{{ entry.url }}">Continue reading</a>
+						</div>
+					</article>
+				{% endfor %}
+			</div>
+		
+		</div>
+	</section>
+{% endblock %}

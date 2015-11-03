@@ -1,0 +1,29 @@
+{% extends "_layouts/default" %}
+{% block pagetitle %}{% endblock %}
+{% block content %}
+<section class="cart">
+	<div class="row">
+		<div class="medium-12 columns">
+			<div class="tygh" id="tygh_container">
+			</div>
+		</div>
+	</div>
+</section>
+
+<script type="text/javascript">
+(function() {
+var url = 'https:' == document.location.protocol ? 'https%3A%2F%2Fcart.breitenbachwine.bluefootsites.com' : 'http%3A%2F%2Fcart.breitenbachwine.bluefootsites.com';
+var cw = document.createElement('script'); cw.type = 'text/javascript'; cw.async = true;
+cw.src = '//widget.cart-services.com/static/init.js?url=' + url + '&layout=3';
+document.getElementById('tygh_container').appendChild(cw);
+})();
+</script>
+<!-- Before using a widget make sure that the
+" <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> "
+meta tag exists. -->
+
+<!-- Before using a widget make sure that the
+" <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> "
+meta tag exists. -->
+
+{% endblock %}

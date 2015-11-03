@@ -1,0 +1,113 @@
+{% extends "_layouts/default" %}
+{% block pagetitle %}{% endblock %}
+{% block content %}
+	{% set categories = {
+		  path : 'http://cart.breitenbachwine.bluefootsites.com/api/2/categories'
+		}
+	%}
+	<section class="categories">
+		<div class="row">
+			<div class="medium-12 columns">
+					<ul class="category-menu">
+						{% for category in craft.placid.request('cart', categories).categories %}	
+								{% if category.parent_id == 0 and category.status == "A" %}
+									<li><a href="/categories/{{category.seo_name}}">{{category.category}}</a>
+									{% set productCategory = category.category_id %}
+									{% set subcategories = false %}
+									{% for category in craft.placid.request('cart', categories).categories %}
+										{% if productCategory != 0 and category.parent_id == productCategory %}
+											{% set subcategories = true %}
+										{% endif %}
+									{% endfor %}
+									{% if subcategories == true %}
+										<ul class="dropdown">
+											{% for category in craft.placid.request('cart', categories).categories %}
+												{% if productCategory != 0 and category.parent_id == productCategory and category.status == "A" %}
+													<li><a href="/categories/{{category.seo_name}}">{{category.category}}</a></li>
+												{% endif %}
+											{% endfor %}
+										</ul>
+									{% endif %}	
+									</li>
+								{% endif %}
+						{% endfor %}
+						<li><a>Gift Certificates</a>
+							<ul class="dropdown">
+								<li><a href="/products?catPath=18#!%2Fgift-certificates-en%2Fin-store-gift-certificate">In-store Gift Certificates</a></li>
+								<li><a href="/products#!%2Fgift-certificates">Online Gift Certificates</a></li>
+							</ul>
+						</li>
+					</ul>
+			</div>
+		</div>	
+	</section>
+	<div class="row">
+		<div class="large-12 columns">
+			<div class="shop-slider">
+				{% for block in shopSlider.shopSlider %}
+					<div>
+					    <img src="{{block.slideImage.first.url('shopSlider')}}" alt="">
+				    </div>
+				{% endfor %}
+			</div>
+			<div class="sale-notice">
+				<div class="sale-container">
+					<strong>{{shopInfo.saleTitle}}</strong> {{shopInfo.saleDescription}} {% if shopInfo.saleLink %}<a href="{{shopInfo.saleLink}}" class="button">Shop Now</a>{% endif %}
+				</div>
+			</div>
+			<div class="featured-products">
+				<h3>Featured Products</h3>
+				<hr>
+				{% set options = {
+				  cache : false,
+				  query : {
+				    limit : 10,
+				    cid: 15
+				  }
+				} %}
+				<div class="product-slider">
+					{% for product in craft.placid.request('featuredProducts', options).products %}
+					
+						{% set prodCatList = product.seo_path|split('/') %}
+						{% set prodCats = "" %}
+						{% for category in prodCatList %}
+							{% set protcatPath %}http://cart.breitenbachwine.bluefootsites.com/api/2/categories/{{category}}{% endset %}
+						    {% set prodCatPathOptions = {
+							  path : protcatPath,
+							  cache : true,
+							  query : {
+							    limit : 999,
+							    items_per_page : 999,
+							    subcats: 'Y'
+							  }
+							}%}
+							{% set prodCats %}{{prodCats}}/{{craft.placid.request('cart', prodCatPathOptions).seo_name}}{% endset %}
+						{% endfor %}
+
+						<div class="slick-slide">
+							<a href="/products?catPath={{product.seo_path}}#!{{prodCats}}/{{product.seo_name}}">
+								<div class="image-container">
+									<div class="image-content">
+										{% set productImage %}https://d250ifotrwykrk.cloudfront.net/images/thumbnails/300/300/{{product.main_pair.detailed.relative_path|default('')}}{% endset %}
+										{% if productImage == "https://d250ifotrwykrk.cloudfront.net/images/thumbnails/300/300/" %}
+										<img src="/assets/no-image.png" alt="">
+										{% else %}
+										    <img src="{{productImage}}" alt="">
+										{% endif %}
+									</div>
+								</div>
+								<div class="product-title">{{product.product}}</div>
+							</a>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block footerScripts %}
+	{% filter automin('js') %}
+	    <script src="/assets/scripts/shop-slider.js"></script>
+	{% endfilter %}
+{% endblock %}

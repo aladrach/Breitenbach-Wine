@@ -1,0 +1,57 @@
+{% extends "_layouts/default" %}
+
+{% block styles %}
+	{% filter automin('css', 'rel="stylesheet"') %}
+		<link rel="stylesheet" href="/assets/stylesheets/jquery.fancybox.css" />
+	{% endfilter %}
+{% endblock %}
+
+{% block pagetitle %}
+	<section class="page-title">
+		<div class="row">
+			<div class="medium-8 columns">
+				<h1>{{entry.title}}</h1>
+			</div>
+			<div class="medium-4 columns">
+				{% set crumbs = entry.ancestors|default([]) %}
+				{% if crumbs|length %}
+				    <ul class="breadcrumbs">
+				        <li><a href="{{ siteUrl }}">Home</a></li>
+				        {% for crumb in crumbs %}
+				            <li><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+				        {% endfor %}
+				    </ul>
+				{% else %}
+					<ul class="breadcrumbs">
+				        <li><a href="{{ siteUrl }}">Home</a></li>
+				        <li><a href="/resources">Resources</a></li>
+				        <li>{{entry.title | trimit(20)}}</li>
+				    </ul>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+{% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="large-12 columns">
+			<div class="gallery-view">
+				{% for image in entry.galleryImages %}
+			        <div class="gallery-image">
+			            <a href="{{image.url('galleryDetails')}}" class="view-image"><img src="{{image.url('galleryDetails')}}"></a>
+			        </div>
+			    {% endfor %}
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
+{% block footerScripts %}
+	{% filter automin('js') %}
+		<script src="/assets/scripts/masonry.min.js"></script>
+		<script src="/assets/scripts/jquery.imagesloaded.js"></script>
+		<script src="/assets/scripts/jquery.fancybox.pack.js"></script>
+		<script src="/assets/scripts/gallery.js"></script>
+	{% endfilter %}
+{% endblock %}

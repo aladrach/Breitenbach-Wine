@@ -1,0 +1,31 @@
+{% set eid = craft.request.lastSegment %}
+{% set event = craft.venti.getEvent(eid) %}
+{% if event.title is not defined %}
+	{% set title = entry.title %}
+{% else %}
+	{% set title = event.title %}
+{% endif %}
+
+{% extends "_layouts/default" %}
+
+
+{% block content %}
+	<div class="row">
+		<div class="medium-12 columns">
+			{% if event.title is not defined %}
+				{% set event = entry %}
+			{% endif %}
+
+			{% set eventStart = event.startDate | date("m-d-Y") %}
+			{% set eventEnd = event.endDate | date("m-d-Y") %}
+			<div class="date-time">
+				<i class="fa fa-calendar"></i> {{event.startDate | date("F j, Y")}}{% if eventStart == eventEnd %}{% else %}
+			    to {{event.endDate | date("F j, Y")}}{% endif %}
+			</div>
+			<div class="date-time">
+				<i class="fa fa-clock-o"></i> {{event.startDate | date("g:i a")}} to {{event.endDate | date("g:i a")}}
+			</div>
+			{{event.eventDescription}}
+		</div>
+	</div>
+{% endblock %}

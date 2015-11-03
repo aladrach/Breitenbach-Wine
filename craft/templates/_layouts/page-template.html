@@ -1,0 +1,79 @@
+{% extends "_layouts/default" %}
+{% block pagetitle %}{% endblock %}
+{% block content %}
+	{% for row in entry.pageLayout %}
+		<section class="cf page-builder  {% if row.sectionClass != '' %}{{row.sectionClass}}{% endif %} {% if row.darkBackground == 1 %}dark{% endif %}" style="{% if row.sectionBgColor != '' and row.fullWidthBg == 1 %}background-color: {{row.sectionBgColor}}; {% endif %}{% if row.sectionBgImage.first.url is defined and row.fullWidthBg == 1 %}background-image: url('{% for image in row.sectionBgImage %}{{image.url}}{% endfor %}');{% endif %}">
+			
+			
+			{% if row.fullWidthContent == 0 %}
+				<div class="row" style="{% if row.sectionBgColor != '' and row.fullWidthBg == 0 %}background-color: {{row.sectionBgColor}}; {% endif %}{% if row.sectionBgImage.first.url is defined and row.fullWidthBg == 0 %}background-image: url('{% for image in row.sectionBgImage %}{{image.url}}{% endfor %}');{% endif %}">
+			{% endif %}
+
+			{% if row.sidebar == 1 %}
+					<div class="medium-8 columns">
+			{% endif %}
+
+			{% for block in row.column %}
+				<div class="{{block.columnWidth}} columns {{block.type}}">
+				    {% switch block.type %}
+				
+						{% case "content" %}
+							{{block.content.content|raw}}
+
+						{% case "heading" %}
+							<h2>{{block.heading}}</h2>
+
+						{% case "image" %}
+							<img src="{{block.image.first.url}}">
+						
+						{% case "gallery" %}
+							<ul class="medium-block-grid-4 small-block-grid-2">
+								{% for image in block.gallery %}
+									<li><img src="{{image.url}}"></li>
+								{% endfor %}
+							</ul>
+
+						{% case "video" %}
+							<div class="flex-video widescreen video-hold">
+								{{block.videoUrl|videoEmbed}}
+							</div>
+
+						{% case "htmlEmbed" %}
+							{{block.htmlCode|raw}}
+
+						{% case "cafeMenu" %}
+							{% for row in block.cafeItem %}
+								<div class="menu-items">
+									<div class="item-price">{{ row.itemPrice|currency('USD', true) }}</div>
+									<strong>{{row.itemName}}</strong>
+									<p>{{row.itemDescription}}</p>
+								</div>
+							{% endfor %}
+
+						{% case "module" %}
+							{% set modulePath %}_includes/{{block.chooseModule}}{% endset %}
+							{% include ''~modulePath~'' %}
+
+						{% case "contactForm" %}
+							{{ craft.sproutForms.displayForm('contactUs') }}
+
+					{% endswitch %}
+				</div>
+			{% endfor %}
+			
+			{% if row.sidebar == 1 %}
+				</div>
+				<div class="medium-4 columns">
+					{% include '_includes/sidebar' %}
+				</div>
+
+			{% endif %}
+			
+
+			{% if row.fullWidthContent == 0 %}
+				</div>
+			{% endif %}
+			
+		</section>
+	{% endfor %}
+{% endblock %}

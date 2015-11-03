@@ -1,0 +1,160 @@
+{#
+ # Homepage template
+ # ---------------
+ #
+ # When this template gets loaded, it will be because someone has accessed
+ # http://yoursite.com/ (without any URI). Craft checks to see if you have
+ # a Single section set to be the Homepage (as you do, by default), and
+ # loads the section’s Template (this file). A special ‘entry’ variable
+ # will already be set for you, assigned to the Homepage entry.
+ #
+ # It's worth noting that even if you didn't have a Homepage Single section,
+ # as long as this template remains at craft/templates/index.html, it
+ # would still be the one to get loaded when accessing http://yoursite.com/,
+ # albeit without an ‘entry’ variable already set for you.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+
+{% extends "_layouts/default" %}
+
+{% block pagetitle %}{% endblock %}
+
+{% block content %}
+	<section class="slider">
+		{% for image in entry.slider %}
+			<div class="slick-slide">
+				<div class="slide-container">
+					<img src="{{image.url}}" alt="">
+				</div>
+			</div>
+		{% endfor %}
+	</section>
+	<section class="events">
+		<div class="row">
+			<div class="event-container cf">
+				<div class="medium-2 columns upcoming-events">
+					<h2><span>Upcoming</span> Events</h2>
+					<a href="#" class="button">View All Events</a>
+				</div>
+				{% set events = craft.venti.allEvents().startDate('and', '>= ' ~ now).limit('2').find() %}
+				{% for event in events %}
+					<div class="medium-5 columns event-column">
+						<div class="date-container">
+							<div class="month">
+								{{event.startDate | date("F")}}
+							</div>
+							<div class="day">
+								{{event.startDate | date("j")}}
+							</div>
+						</div>
+					    <p><strong>{{event.title}}</strong></p>
+					    <p>{{event.startDate | date("g:i A")}} - {{event.endDate | date("g:i A")}}</p>
+					    <a class="button">View Event Details</a>
+				    </div>
+				{% endfor %}
+			</div>
+		</div>
+	</section>
+	<section class="about-us">
+		<div class="row">
+			<div class="medium-6 columns">
+				<h2>{{entry.aboutSectionTitle}}</h2>
+				{{entry.aboutSectionContent}}
+				<a href="/about-us" class="button">Learn More About Us</a>
+			</div>
+			<div class="medium-6 columns">
+				<div class="flex-video widescreen">
+					{{entry.aboutSectionVideoUrl|videoEmbed}}
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="cta-columns" style="background-image: url('{{entry.ctaSectionBg.first.url}}');">
+		<div class="row">
+			{% for block in entry.callToActionColumns %}
+			<div class="medium-4 columns">
+				<div class="cta-container">
+					<img src="{{block.ctaImage.first.url}}" alt="">
+					<div class="cta-content">
+						<h4>{{block.ctaHeader}}</h4>
+						<p>{{block.ctaDescription}}</p>
+						<a href="{{block.ctaButtonLink}}" class="button">{{block.ctaButtonText}}</a>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</section>
+	<section class="featured-products">
+		<div class="row">
+			<div class="medium-12 columns">
+			<h2>Featured Products</h2>
+				{% set options = {
+				  cache : false,
+				  query : {
+				    limit : 10,
+				    cid: 15
+				  }
+				} %}
+				<div class="product-slider">
+					{% for product in craft.placid.request('featuredProducts', options).products %}
+					
+						{% set prodCatList = product.seo_path|split('/') %}
+						{% set prodCats = "" %}
+						{% for category in prodCatList %}
+							{% set protcatPath %}http://cart.breitenbachwine.bluefootsites.com/api/2/categories/{{category}}{% endset %}
+						    {% set prodCatPathOptions = {
+							  path : protcatPath,
+							  cache : false,
+							  query : {
+							    limit : 999,
+							    items_per_page : 999,
+							    subcats: 'Y'
+							  }
+							}%}
+							{% set prodCats %}{{prodCats}}/{{craft.placid.request('cart', prodCatPathOptions).seo_name}}{% endset %}
+						{% endfor %}
+						<div class="slick-slide">
+							<a href="/products?catPath={{product.seo_path}}#!{{prodCats}}/{{product.seo_name}}">
+								<div class="image-container">
+									<div class="image-content">
+										{% set productImage %}https://d250ifotrwykrk.cloudfront.net/images/thumbnails/300/300/{{product.main_pair.detailed.relative_path|default('')}}{% endset %}
+										{% if productImage == "https://d250ifotrwykrk.cloudfront.net/images/thumbnails/300/300/" %}
+										<img src="/assets/no-image.png" alt="">
+										{% else %}
+										    <img src="{{productImage}}" alt="">
+										{% endif %}
+									</div>
+								</div>
+								<div class="product-title">{{product.product}}</div>
+							</a>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</section>
+	<section class="featured-slider cf">
+			{% for block in entry.featureSlider %}
+				<div class="slick-slide">
+				    <div class="medium-6 columns image-container">
+				    	<img src="{{block.slideImage.first.url('featureSlider')}}" alt="{{block.slideTitle}}">
+				    </div>
+					<div class="medium-6 columns">
+						<h2>{{block.slideTitle}}</h2>
+						<h4>{{block.slideSubtitle}}</h4>
+						<p>{{block.slideDescription}}</p>
+						<a href="{{block.slideButtonLink}}" class="button">{{block.slideButtonText}}</a>
+					</div>
+				</div>
+			{% endfor %}
+		</div>
+	</section>
+{% endblock %}
+{% block footerScripts %}
+	{% filter automin('js') %}
+	    <script src="/assets/scripts/homepage-scripts.js"></script>
+	{% endfilter %}
+{% endblock %}

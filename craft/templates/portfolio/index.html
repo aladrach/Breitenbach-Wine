@@ -1,0 +1,49 @@
+{#
+ # Blog index template
+ # -------------------
+ #
+ # This template is loaded whenever http://example.com/news is
+ # requested, because it is located at news/index.html in your
+ # craft/templates/ folder.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+
+{% extends "_layouts/default" %}
+{% set title = "Our Portfolio" %}
+
+{% block content %}
+	<section class="portfolio-page">
+		<div class="row">
+			<div class="medium-12 columns">
+				<div class="filter-buttons">
+				<button class="filter active" data-filter="all">
+					All
+					</button>
+					{% for entry in craft.entries.section('services') %}
+					<button class="filter" data-filter=".{{entry.title | kebab}}">
+					{{entry.title}}
+					</button>
+				{% endfor %}
+				</div>
+				<div class="portfolio-items">
+					{% for entry in craft.entries.section('portfolio') %}
+						<div class="mix {{entry.portfolioCategory.first.title | kebab}}">
+							<img alt="{{entry.title}}" src="{{entry.portfolioImage.first.url('portfolioList')}}">
+							<div class="overlay">
+								<div class="overlay-container">
+									<div class="overlay-content">
+										<h3>{{entry.title}}</h3>
+										<span class="portfolio-category">{{entry.portfolioCategory.first.title}}</span>
+										<a class="button" href="{{entry.url}}">View Detail</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}

@@ -1,0 +1,154 @@
+{% extends "_layouts/default" %}
+{% block pagetitle %}{% endblock %}
+{% block content %}
+{% set categories = {
+		  path : 'http://cart.breitenbachwine.bluefootsites.com/api/2/categories',
+		  cache : true,
+		  query : {
+		    limit : 999,
+		    items_per_page : 999
+		  }
+		}%}
+<section class="categories">
+	<div class="row">
+		<div class="medium-12 columns">
+				<ul class="category-menu">
+						{% for category in craft.placid.request('cart', categories).categories %}	
+								{% if category.parent_id == 0 and category.status == "A" %}
+									<li><a href="/categories/{{category.seo_name}}">{{category.category}}</a>
+									{% set productCategory = category.category_id %}
+									{% set subcategories = false %}
+									{% for category in craft.placid.request('cart', categories).categories %}
+										{% if productCategory != 0 and category.parent_id == productCategory %}
+											{% set subcategories = true %}
+										{% endif %}
+									{% endfor %}
+									{% if subcategories == true %}
+										<ul class="dropdown">
+											{% for category in craft.placid.request('cart', categories).categories %}
+												{% if productCategory != 0 and category.parent_id == productCategory and category.status == "A" %}
+													<li><a href="/categories/{{category.seo_name}}">{{category.category}}</a></li>
+												{% endif %}
+											{% endfor %}
+										</ul>
+									{% endif %}	
+									</li>
+								{% endif %}
+						{% endfor %}
+						<li><a>Gift Certificates</a>
+							<ul class="dropdown">
+								<li><a href="/products?catPath=18#!%2Fgift-certificates-en%2Fin-store-gift-certificate">In-store Gift Certificates</a></li>
+								<li><a href="/products#!%2Fgift-certificates">Online Gift Certificates</a></li>
+							</ul>
+						</li>
+					</ul>
+		</div>
+	</div>	
+</section>
+<section class="cart">
+	{% set categories = {
+		  path : 'http://cart.breitenbachwine.bluefootsites.com/api/2/categories',
+		  cache : true,
+		  query : {
+		    limit : 999,
+		    items_per_page : 999
+		  }
+		}%}
+		{% set categoryId = '' %}
+		{% set categoryName = 'Store' %}
+		{% set catList = '' %}
+		
+			
+			{% for category in craft.placid.request('cart', categories).categories %}
+				{% if craft.request.getSegment(2) %}
+					{% if category.seo_name == craft.request.getSegment(2) %}
+						{% set categoryId = category.category_id %}
+						{% set categories = {
+						  path : 'http://cart.breitenbachwine.bluefootsites.com/api/2/categories',
+						  cache : true,
+						  query : {
+						    limit : 999,
+						    items_per_page : 999,
+						  }
+						}%}
+						{% set categoryName = category.category %}
+						{% set catList = category.id_path %}
+					{% endif %}
+				{% else %}
+				    {% set categories = {
+					  path : 'http://cart.breitenbachwine.bluefootsites.com/api/2/categories',
+					  cache : true,
+					  query : {
+					    limit : 999,
+					    items_per_page : 999
+					  }
+					}%}
+					
+				{% endif %}
+			{% endfor %}
+			
+			
+				{% set catCount = 0 %}
+				{% for category in craft.placid.request('cart', categories).categories %}	
+				{% if categoryId == '' %}
+					{% if category.parent_id == 0 %}
+						{% set catCount = catCount + 1 %}
+					{% endif %}
+				{% elseif category.parent_id == categoryId %}
+					{% set catCount = catCount + 1 %}
+				{% endif %}
+			{% endfor %}
+
+			{% set catList = catList|split('/') %}
+{% if craft.request.getParam('catPath') %}
+<div class="row">
+	<div class="medium-12 columns">
+
+	
+		<ul class="breadcrumbs">
+				<li><a href="/categories">Store</a></li>
+			
+			{% set prodCatList = craft.request.getParam('catPath')|split('/') %}
+			{% set prodCats = "" %}
+			{% for category in prodCatList %}
+				<li>
+				{% set protcatPath %}http://cart.breitenbachwine.bluefootsites.com/api/2/categories/{{category}}{% endset %}
+			    {% set prodCatPathOptions = {
+				  path : protcatPath,
+				  cache : true,
+				  query : {
+				    limit : 999,
+				    items_per_page : 999,
+				    subcats: 'Y'
+				  }
+				}%}
+				<a href="/categories/{{craft.placid.request('cart', prodCatPathOptions).seo_name}}"> {{craft.placid.request('cart', prodCatPathOptions).category}}</a>
+				</li>
+			{% endfor %}
+			</ul>
+	</div>
+</div>
+		{% endif %}
+<div class="row">
+		<div class="medium-12 columns">
+			
+			<div class="tygh" id="tygh_container">
+			</div>
+		</div>
+	</div>
+</section>
+
+<script type="text/javascript">
+(function() {
+var url = 'https:' == document.location.protocol ? 'https%3A%2F%2Fcart.breitenbachwine.bluefootsites.com' : 'http%3A%2F%2Fcart.breitenbachwine.bluefootsites.com';
+var cw = document.createElement('script'); cw.type = 'text/javascript'; cw.async = true;
+cw.src = '//widget.cart-services.com/static/init.js?url=' + url + '&layout=3';
+document.getElementById('tygh_container').appendChild(cw);
+})();
+</script>
+<!-- Before using a widget make sure that the
+" <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> "
+meta tag exists. -->
+
+{% endblock %}
+

@@ -1,0 +1,71 @@
+{#
+ # Layout template
+ # ---------------
+ #
+ # This template defines your site’s global layout. It can be
+ # “extended” by other templates to fill in the gaps.
+ #
+ # See Twig’s Template Inheritance documentation for more details:
+ # http://twig.sensiolabs.org/doc/templates.html#template-inheritance
+ #}
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US">
+<head>
+	<meta charset="utf-8" />
+	<title>{% if title is defined %}{{ title }} - {% endif %}{{ siteName }}</title>
+	<link rel="home" href="{{ siteUrl }}" />
+	{% block styles %}{% endblock %}
+	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	{% filter automin('css', 'rel="stylesheet"') %}
+	<link rel="stylesheet" href="/assets/stylesheets/normalize.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/foundation.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/slicknav.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/slick.css" />
+    <link rel="stylesheet" href="/assets/stylesheets/slick-theme.css" />
+	{% endfilter %}
+
+	{% filter automin('less', 'rel="stylesheet"') %}
+    <link rel="stylesheet" href="/assets/stylesheets/_global.less" />
+	{% endfilter %}
+
+</head>
+<body>
+
+		{% include '_includes/header.html' %}
+		{% block pagetitle %}
+			{% if entry.title is defined %}
+				{% set pageTitle = entry.title %}
+			{% else %}
+				{% set pageTitle = title %}
+			{% endif %}
+			
+					<section class="page-title">
+
+				<div class="row">
+					<div class="medium-12 columns">
+						<h1>{{pageTitle}}</h1>
+					</div>
+					
+				</div>
+			</section>
+		{% endblock %}
+		<main id="content" role="main">
+			{% block content %}
+				<p>If you see me, you haven’t set your <code>{% verbatim %}{% block content %}…{% endblock %}{% endverbatim %}</code> yet.</p>
+				<p>See Twig’s <a href="http://twig.sensiolabs.org/doc/templates.html#template-inheritance">Template Inheritance</a> documentation for an explanation.</p>
+			{% endblock %}
+		</main>
+
+		{% include '_includes/footer.html' %}
+	{% filter automin('js') %}
+    <script src="/assets/scripts/vendor/jquery.js"></script>
+    <script src="/assets/scripts/foundation/foundation.js"></script>
+    <script src="/assets/scripts/jquery.slicknav.js"></script>
+    <script src="/assets/scripts/slick.js"></script>
+    <script src="/assets/scripts/app.js"></script>
+
+	{% endfilter %}
+	{% block footerScripts %}{% endblock %}
+</body>
+</html>

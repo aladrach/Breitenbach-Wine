@@ -1,0 +1,59 @@
+<header>
+    <section class="top-bar">
+        <div class="row">
+            <div class="medium-4 columns">
+                <a class="logo" href="/">
+                    <img src="{{ globals.logo.first.url }}" alt="{{ globals.logo.first.title }}">
+                </a>
+            </div>
+            <div class="medium-8 columns top-info">
+                <div class="row">
+                    <div class="medium-12 columns">
+                        <ul class="social-icons">
+                            {% for block in globals.socialIcons %}
+                                <li><a href="{{ block.socialLink }}">{{ block.icon.icon }}</a></li>
+                            {% endfor %}
+                         </ul>
+                        <i class="fa fa-phone"></i> {{globals.phone}} <a href="/cart#!/cart/"><i class="fa fa-shopping-cart"></i> View Cart</a>
+                       
+                    </div>
+                    <div class="medium-12 columns">
+                        {% set nav = craft.amNav.getNavRaw("mainMenu") %}
+
+                        {% macro addNodeToNavigation(node, index) %}
+                            {%- set nodeClasses = [] -%}
+                            {%- if node.hasChildren -%}
+                                {%- set nodeClasses = nodeClasses|merge(['has-children']) -%}
+                            {%- endif -%}
+                            {%- if node.level == 1 and index == 1 -%}
+                                {%- set nodeClasses = nodeClasses|merge(['first']) -%}
+                            {%- endif -%}
+                            {%- if node.listClass|length -%}
+                                {%- set nodeClasses = nodeClasses|merge([node.listClass]) -%}
+                            {%- endif -%}
+                            {% set pageAddress %}/{{craft.request.getPath()}}{% endset %}
+                            <li{% if nodeClasses|length %} class="{{ nodeClasses|join(' ') }}"{% endif %}>
+                                <a href="{{ node.url }}" title="{{ node.name }}"{% if node.blank %} target="_blank"{% endif %}{% if pageAddress == node.url %} class="active"{% endif %}>{{ node.name }}</a>
+                                {% if node.hasChildren %}
+                                    <ul class="nav__level{{ (node.level + 1) }}">
+                                        {% for subnode in node.children %}
+                                            {{ _self.addNodeToNavigation(subnode, loop.index) }}
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </li>
+                        {% endmacro %}
+
+                        <nav class="navmain">
+                            <ul class="nav">
+                                {% for node in nav %}
+                                    {{ _self.addNodeToNavigation(node, loop.index) }}
+                                {% endfor %}
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</header>

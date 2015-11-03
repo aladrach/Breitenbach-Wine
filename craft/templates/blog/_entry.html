@@ -1,0 +1,56 @@
+{#
+ # News entry template
+ # -------------------
+ #
+ # This template gets loaded whenever a News entry’s URL is
+ # requested. That’s because the News section’s Template setting is
+ # set to “news/_entry”, the path to this template.
+ #
+ # When this template is loaded, it will already have an ‘entry’
+ # variable, set to the requested News entry.
+ #
+ # See this page for more details on how Craft routes requests:
+ # http://buildwithcraft.com/docs/routing
+ #}
+
+{% extends "_layouts/default" %}
+
+{% block pagetitle %}
+	<section class="page-title">
+		<div class="row">
+			<div class="medium-8 columns">
+				<h1>{{entry.title}}</h1>
+			</div>
+			<div class="medium-4 columns">
+				{% set crumbs = entry.ancestors|default([]) %}
+				{% if crumbs|length %}
+				    <ul class="breadcrumbs">
+				        <li><a href="{{ siteUrl }}">Home</a></li>
+				        {% for crumb in crumbs %}
+				            <li><a href="{{ crumb.url }}">{{ crumb.title }}</a></li>
+				        {% endfor %}
+				    </ul>
+				{% else %}
+					<ul class="breadcrumbs">
+				        <li><a href="{{ siteUrl }}">Home</a></li>
+				        <li><a href="/gallery">Gallery</a></li>
+				        <li>{{entry.title | trimit(20)}}</li>
+				    </ul>
+				{% endif %}
+			</div>
+		</div>
+	</section>
+{% endblock %}
+
+{% block content %}
+<section class="blog-list">
+	<div class="row">
+		<div class="medium-12 columns">
+			<article>
+				<p class="blog-info">Posted on {{ entry.postDate.format('F d, Y') }}</p>
+				{{ entry.body }}
+			</article>
+		</div>
+	</div>
+</section>
+{% endblock %}
